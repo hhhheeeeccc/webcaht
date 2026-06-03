@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AURA AI - System Monitoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "surface-container-low": "#1c1b1b",
+                    "on-tertiary-container": "#b4003d",
+                    "outline": "#849396",
+                    "surface-container-lowest": "#0e0e0e",
+                    "primary-fixed": "#9cf0ff",
+                    "inverse-primary": "#006875",
+                    "on-secondary-container": "#0f6d00",
+                    "primary-fixed-dim": "#00daf3",
+                    "surface-variant": "#353534",
+                    "surface-dim": "#131313",
+                    "secondary-fixed": "#79ff5b",
+                    "surface-tint": "#00daf3",
+                    "surface-container": "#201f1f",
+                    "primary-container": "#00e5ff",
+                    "surface": "#131313",
+                    "on-secondary-fixed-variant": "#095300",
+                    "on-background": "#e5e2e1",
+                    "inverse-on-surface": "#313030",
+                    "error": "#ffb4ab",
+                    "on-primary-container": "#00626e",
+                    "secondary": "#d7ffc5",
+                    "secondary-container": "#2ff801",
+                    "on-surface-variant": "#bac9cc",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-highest": "#353534",
+                    "on-surface": "#e5e2e1",
+                    "on-primary-fixed": "#001f24",
+                    "on-primary-fixed-variant": "#004f58",
+                    "on-secondary-fixed": "#022100",
+                    "surface-bright": "#3a3939",
+                    "tertiary-container": "#ffc1c6",
+                    "tertiary": "#ffe8e8",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#910030",
+                    "on-secondary": "#053900",
+                    "secondary-fixed-dim": "#2ae500",
+                    "background": "#131313",
+                    "on-tertiary": "#67001f",
+                    "on-primary": "#00363d",
+                    "primary": "#c3f5ff",
+                    "tertiary-fixed": "#ffd9dc",
+                    "tertiary-fixed-dim": "#ffb2ba",
+                    "error-container": "#93000a",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#400010",
+                    "outline-variant": "#3b494c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "64px",
+                    "margin": "32px",
+                    "lg": "40px",
+                    "sm": "16px",
+                    "md": "24px",
+                    "base": "4px",
+                    "gutter": "24px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "code-sm": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "label-caps": ["JetBrains Mono"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "code-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #050505; color: #e5e2e1; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(0, 218, 243, 0.05);
+        }
+        .status-glow-green { box-shadow: 0 0 10px rgba(42, 229, 0, 0.4); }
+        .status-glow-blue { box-shadow: 0 0 10px rgba(0, 218, 243, 0.4); }
+        .cyber-grid {
+            background-image: linear-gradient(rgba(0, 218, 243, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 218, 243, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        @keyframes pulse-status {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .animate-status { animation: pulse-status 2s infinite ease-in-out; }
+        .step-segment {
+            height: 8px;
+            width: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: 2px;
+        }
+        .step-segment.active { background: #2ae500; box-shadow: 0 0 8px #2ae500; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="cyber-grid min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-xl bg-surface/10 border-b border-outline-variant/30 shadow-[0_0_20px_rgba(0,218,243,0.1)] flex justify-between items-center px-sm h-16 w-full">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="bubble_chart">bubble_chart</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tighter text-primary-fixed dark:text-primary-fixed-dim">AURA AI</h1>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant hidden md:block">SYSTEMS_NOMINAL</span>
+<span class="material-symbols-outlined text-primary-fixed" data-icon="sensors">sensors</span>
+</div>
+</header>
+<main class="pt-24 px-margin max-w-[1600px] mx-auto space-y-lg">
+<!-- Hero Section: System Health Gauge -->
+<section class="glass-card rounded-xl p-md flex flex-col md:flex-row items-center justify-between gap-lg relative overflow-hidden">
+<div class="absolute -left-20 -top-20 w-64 h-64 bg-secondary-fixed/5 blur-[100px] rounded-full"></div>
+<div class="z-10 space-y-xs text-center md:text-left">
+<p class="font-label-caps text-label-caps text-secondary-fixed">GLOBAL_STATUS</p>
+<h2 class="font-display-lg text-display-lg text-on-surface">System Operational</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">All core nodes are synchronized. AI-driven remediation is active at edge locations.</p>
+</div>
+<div class="z-10 flex flex-col items-center">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-variant/30" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-secondary-fixed drop-shadow-[0_0_12px_rgba(42,229,0,0.6)]" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="50" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-secondary-fixed">98%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">HEALTH</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Active Services List -->
+<div class="md:col-span-8 glass-card rounded-xl overflow-hidden">
+<div class="p-sm border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps text-primary-fixed">ACTIVE_SERVICES</h3>
+<span class="font-code-sm text-code-sm text-on-surface-variant">NODE_COUNT: 12</span>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Service Item -->
+<div class="p-md flex items-center justify-between hover:bg-surface-variant/10 transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-status status-glow-green"></div>
+<div>
+<p class="font-code-sm text-code-sm text-on-surface">API_GATEWAY_v2</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">LATENCY: 14ms</p>
+</div>
+</div>
+<div class="flex gap-base">
+<div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment"></div>
+</div>
+</div>
+<!-- Service Item -->
+<div class="p-md flex items-center justify-between hover:bg-surface-variant/10 transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-status status-glow-green"></div>
+<div>
+<p class="font-code-sm text-code-sm text-on-surface">AUTH_MICROSERVICE_B</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">UPTIME: 99.9%</p>
+</div>
+</div>
+<div class="flex gap-base">
+<div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment"></div><div class="step-segment"></div>
+</div>
+</div>
+<!-- Service Item -->
+<div class="p-md flex items-center justify-between hover:bg-surface-variant/10 transition-colors">
+<div class="flex items-center gap-md">
+<div class="w-2 h-2 rounded-full bg-primary-fixed animate-status status-glow-blue"></div>
+<div>
+<p class="font-code-sm text-code-sm text-on-surface">DB_CLUSTER_NEPTUNE</p>
+<p class="font-label-caps text-[10px] text-on-surface-variant">SYNCING_REPLICAS</p>
+</div>
+</div>
+<div class="flex gap-base">
+<div class="step-segment active"></div><div class="step-segment active"></div><div class="step-segment"></div><div class="step-segment"></div><div class="step-segment"></div><div class="step-segment"></div><div class="step-segment"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Linear Tickets: Quick-view -->
+<div class="md:col-span-4 glass-card rounded-xl flex flex-col">
+<div class="p-sm border-b border-outline-variant/10 bg-primary/5">
+<h3 class="font-label-caps text-label-caps text-primary-fixed">LINEAR_TASKS</h3>
+</div>
+<div class="p-md flex-grow space-y-md">
+<div class="p-sm border border-primary-fixed/20 rounded bg-primary/5 relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-fixed"></div>
+<p class="font-label-caps text-[10px] text-primary-fixed-dim mb-1">AUTO_GENERATED // PRIORITY_1</p>
+<h4 class="font-body-md text-body-md text-on-surface font-semibold mb-2">Remediate Load Balancer Spike</h4>
+<p class="font-code-sm text-code-sm text-on-surface-variant mb-4">Unusual traffic pattern detected in us-east-1. Scaling group initiating.</p>
+<button class="w-full bg-primary-fixed text-on-primary-fixed font-label-caps py-2 rounded-sm hover:brightness-110 transition-all">EXECUTE_REPAIR</button>
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex items-center justify-between text-[11px] font-code-sm border-b border-outline-variant/5 pb-xs">
+<span class="text-on-surface-variant">AUR-402 - SSL_EXPIRY_WARN</span>
+<span class="text-secondary-fixed">RESOLVED</span>
+</div>
+<div class="flex items-center justify-between text-[11px] font-code-sm border-b border-outline-variant/5 pb-xs">
+<span class="text-on-surface-variant">AUR-398 - HEAP_SIZE_LIMIT</span>
+<span class="text-on-surface-variant opacity-50">QUEUED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- System Architecture Visual (Atmospheric) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="glass-card rounded-xl p-md border-l-4 border-secondary-container">
+<p class="font-label-caps text-label-caps text-on-surface-variant">CPU_USAGE</p>
+<div class="mt-xs flex items-end gap-1 h-12">
+<div class="w-full bg-secondary-fixed/20 h-[30%]"></div>
+<div class="w-full bg-secondary-fixed/20 h-[45%]"></div>
+<div class="w-full bg-secondary-fixed/40 h-[60%]"></div>
+<div class="w-full bg-secondary-fixed h-[85%]"></div>
+<div class="w-full bg-secondary-fixed/60 h-[50%]"></div>
+</div>
+</div>
+<div class="glass-card rounded-xl p-md border-l-4 border-primary-container">
+<p class="font-label-caps text-label-caps text-on-surface-variant">NETWORK_THROUGHPUT</p>
+<div class="mt-xs flex items-end gap-1 h-12">
+<div class="w-full bg-primary-fixed/20 h-[50%]"></div>
+<div class="w-full bg-primary-fixed/60 h-[70%]"></div>
+<div class="w-full bg-primary-fixed h-[40%]"></div>
+<div class="w-full bg-primary-fixed/40 h-[90%]"></div>
+<div class="w-full bg-primary-fixed/30 h-[60%]"></div>
+</div>
+</div>
+<div class="glass-card rounded-xl p-md border-l-4 border-error">
+<p class="font-label-caps text-label-caps text-on-surface-variant">ANOMALY_INDEX</p>
+<div class="mt-xs flex items-end gap-1 h-12">
+<div class="w-full bg-error/20 h-[10%]"></div>
+<div class="w-full bg-error/20 h-[15%]"></div>
+<div class="w-full bg-error/40 h-[12%]"></div>
+<div class="w-full bg-error/60 h-[18%]"></div>
+<div class="w-full bg-error h-[14%]"></div>
+</div>
+</div>
+</section>
+<!-- Imagery Section -->
+<section class="glass-card rounded-xl overflow-hidden h-64 relative group">
+<img class="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-opacity" data-alt="A highly detailed close-up of high-tech server hardware components with pulsing neon blue and emerald green light indicators. The environment is a dark, futuristic data center with faint reflections on glass surfaces and a cold, professional atmospheric glow. Complex circuit patterns are visible, conveying a sense of advanced artificial intelligence and high-speed data processing in a minimalist cyberpunk style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChRJl369NWKKS9yeGvtbgsH8ER_YY_U3TOu-DUkKN7-qT0ZxGG14D-j2QPpnoMPcOwv2ELfc9jktqODSoGpnERwAHSxCsVJZTgUMQDMinT1ndFuZ8fVRtB7Jk997jv3DgZRM_Q-BsJSBcaSetHQ-qyrU01CvK03SU-rjDNaHDxJTB_8GnuuI7aoS89igYiZIYXyQYvWTAjIRgdxlpebzKxdeG-4zwLP9LaodkbJ9iC9gFJKagVoN1mcbtVcIs_rKE3og6LGpGsNUw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-md left-md">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary-fixed font-bold">EDGE_NODE_CLUSTER_01</h3>
+<p class="font-code-sm text-code-sm text-on-surface-variant">LOCATION: REYKJAVIK_DATA_HAVEN</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 backdrop-blur-2xl bg-surface-container/20 rounded-t-xl border-t border-outline-variant/20 shadow-[0_-4px_24px_rgba(0,0,0,0.5)] flex justify-around items-center h-20 px-4 pb-safe w-full">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary/10 text-primary-fixed dark:text-primary-fixed-dim rounded-xl px-4 py-1 shadow-[0_0_15px_rgba(0,218,243,0.2)] active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-code-sm text-code-sm">Dashboard</span>
+</a>
+<!-- Tickets -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 opacity-70 hover:opacity-100 hover:text-primary-fixed active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span class="font-code-sm text-code-sm">Tickets</span>
+</a>
+<!-- Actions -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 opacity-70 hover:opacity-100 hover:text-primary-fixed active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-code-sm text-code-sm">Actions</span>
+</a>
+</nav>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-24 right-md w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-[0_0_20px_rgba(0,229,255,0.4)] flex items-center justify-center active:scale-90 transition-all z-40 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform" data-icon="add">add</span>
+<div class="absolute right-16 bg-surface-container-high px-md py-xs rounded-lg border border-outline-variant/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap">
+<span class="font-label-caps text-label-caps text-primary-fixed">NEW_DEPLOYMENT</span>
+</div>
+</button>
+<script>
+        // Micro-interaction: Randomly flicker status lights
+        setInterval(() => {
+            const lights = document.querySelectorAll('.step-segment');
+            const randomLight = lights[Math.floor(Math.random() * lights.length)];
+            randomLight.classList.toggle('brightness-150');
+            setTimeout(() => randomLight.classList.toggle('brightness-150'), 100);
+        }, 3000);
+
+        // Simple dashboard "live" updates simulation
+        setInterval(() => {
+            const healthValue = document.querySelector('.font-display-lg.text-secondary-fixed');
+            if (healthValue && Math.random() > 0.7) {
+                const current = parseInt(healthValue.textContent);
+                const jitter = Math.random() > 0.5 ? 1 : -1;
+                const next = Math.min(100, Math.max(90, current + jitter));
+                healthValue.textContent = next + '%';
+            }
+        }, 5000);
+    </script>
+</body></html>
